@@ -19,8 +19,8 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::group(['namespace'=>'Backend'],function(){
-    Route::get('api/users',['as'=>'users','uses'=>'UserController@getAll']);
-    Route::post('api/users',['as'=>'users','uses'=>'UserController@create']);
-    Route::put('api/users',['as'=>'users','uses'=>'UserController@update']);
+Route::group(['namespace'=>'Backend','prefix'=>'api','middleware'=>'auth'],function(){
+    Route::get('users',['as'=>'users','uses'=>'UserController@getAll']);
+    Route::post('users',['as'=>'users','uses'=>'UserController@create']);
+    Route::put('users',['as'=>'users','uses'=>'UserController@update']);
 });
