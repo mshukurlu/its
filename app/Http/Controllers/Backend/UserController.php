@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Http\Requests\UserCreateRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Repository\UserInterface;
 use App\User;
 use Illuminate\Http\Request;
@@ -12,20 +14,20 @@ use App\Http\Controllers\Controller;
 
 class UserController extends Controller
 {
-    protected  $user;
+   protected  $user;
+
    public function __construct(UserInterface $user)
    {
        $this->user = $user;
    }
 
-   public function getAll(Request $request)
+   public function getAll()
    {
-      return $this->user->getForApi($request);
+      return $this->user->getForApi();
    }
 
-   public function create(Request $request)
+   public function create(Request $request,UserCreateRequest $validate)
    {
-       $request->validate(['name'=>'required','email'=>'required','password'=>'required','phone'=>'required']);
         //technical debt
        $data = $request->only(['name','email','password','phome']);
 
@@ -36,16 +38,25 @@ class UserController extends Controller
        return response()->json(['response'=>'ugurla elave edildi']);
    }
 
-    public function update(Request $request)
+    public function update(Request $request,UserUpdateRequest $request2)
     {
-        $request->validate(['name'=>'required','email'=>'required','password'=>'required','phone'=>'required']);
         //technical debt
-        $user_id= $request->input('id');
+        $user_id = $request->input('id');
         $data = $request->only(['name','email','password','phone']);
 
-        $data['password']= bcrypt($data['password']);
+        if($request->has('password')) {
+            $data['password'] = bcrypt($data['password']);
+        }
+
         $this->user->update($user_id,$data);
 
-        return response()->json(['response'=>'ugurla elave edildi']);
+        return response()->json(['response'=>'ugurla yeniləndi']);
+    }
+
+    public function delete($id)
+    {
+        $this->user->deleteUser($id);
+
+        return response()->json(['response'=>'Ugurla silindi']);
     }
 }

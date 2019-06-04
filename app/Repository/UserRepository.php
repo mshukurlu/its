@@ -1,6 +1,8 @@
 <?php
 namespace App\Repository;
 use App\User;
+use function foo\func;
+use Illuminate\Http\Request;
 
 /**
  * Created by PhpStorm.
@@ -11,11 +13,26 @@ use App\User;
 
 class UserRepository implements UserInterface
 {
-    protected  $userModel;
+    protected  $userModel,$request,$start,$length,$draw,$ordering,$orderBy,$dir,$columns=[];
+    protected  $_result;
 
-    public function __construct(User $user)
+    public function __construct(User $user,Request $request)
     {
         $this->userModel = $user;
+        $this->request = $request;
+        $this->columns = array(
+            0=>'id',
+            1=>'name',
+            2=>'email',
+            3=>'phone'
+        );
+        $this->start = intval($request->input('start'));
+        $this->length = intval($request->input('length'));
+        $this->draw = intval($request->input('draw'));
+        $this->ordering = intval($request->input('order[0][column]'));
+        $this->orderBy = $this->columns[$this->ordering];
+        $this->dir = $request->input('order')[0]['dir'];
+
     }
 
     public function getById($user_id)
@@ -43,42 +60,54 @@ class UserRepository implements UserInterface
         return $this->userModel->create($data);
     }
 
-    public function getForApi($request)
+    public function getForApi()
     {
-        $start = intval($request->input('start'));
-        $length = intval($request->input('length'));
-        $draw = intval($request->input('draw'));
+         if($this->search($this->request))
+         {
+             return $this->_result;
+         }
 
-        if(!empty($request->input('search.value')))
-        {
-            $data = User::where('name','LIKE','%'.$request->input('search.value').'%')->skip($start)->take($length)->get();
-            $recordsTotal = User::where('name','LIKE','%'.$request->input('search.value').'%')->count();
-            //   $recordsFiltered = $recordsTotal - $data->count();
-
-            // $data = $users->skip($start)->take($length)->get();
-            //  $recordsTotal = $users->count();
-
-        }
-        else
-        {
-            $data = User::skip($start)->take($length)->get();
-            //  $data = $users->skip($start)->take($length)->get();
-            $recordsTotal = User::count();
-            //$recordsFiltered = User::count());
-        }
-        // $recordsFiltered = User::count()-$data->count();
-
-        return array(
-            "data"=>$data,
-            "draw"=>$draw,
-            "length"=>$length,
-            "recordsTotal"=>$recordsTotal,
-            "recordsFiltered"=>$recordsTotal
-        );
+         return $this->getAllResults();
     }
 
-    public function updateUser($user_id, $data)
+    protected function search()
     {
-        // TODO: Implement updateUser() method.
+        if($this->request->input('search')) {
+            $data = User::
+                 where('name', 'LIKE', '%' . $this->request->input('search.value') . '%')
+                ->orWhere('email', 'LIKE', '%' . $this->request->input('search.value') . '%')
+                ->orWhere('phone', 'LIKE', '%' . $this->request->input('search.value') . '%')
+                ->skip($this->start)
+                ->take($this->length)
+                ->orderBy($this->orderBy, $this->dir)
+                ->get();
+            $recordsTotal = User::where('name', 'LIKE', '%' . $this->request->input('search.value') . '%')->count();
+
+            $this->_result =  $this->responseArray($data,$this->draw,$this->length,$recordsTotal,$recordsTotal);
+
+            return true;
+        }
+
+        return false;
+    }
+
+     protected function getAllResults()
+     {
+         $data = User::skip($this->start)->take($this->length)->orderBy($this->orderBy,$this->dir)->get();
+
+         $recordsTotal = User::count();
+
+         return $this->responseArray($data,$this->draw,$this->length,$recordsTotal,$recordsTotal);
+     }
+
+    protected function responseArray($data,$draw,$length,$recordsTotal,$recordsFiltered)
+    {
+     return  response()->json( array(
+            "data"=>$data,
+            "draw"=>$this->draw,
+            "length"=>$this->length,
+            "recordsTotal"=>$recordsTotal,
+            "recordsFiltered"=>$recordsFiltered
+        ));
     }
 }
