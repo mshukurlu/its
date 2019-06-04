@@ -11,7 +11,6 @@
             <td>EMAIL</td>
             <td>PHONE</td>
             <td>Edit/Delete</td>
-            <td>Action</td>
         </tr>
         </thead>
         <tbody>
@@ -47,11 +46,6 @@
                     defaultContent: ' <button type="button" id="editor_edit" class="btn btn-primary" data-toggle="modal" data-target="#example2Modal">\n' +
                         '      EDIT\n' +
                         '    </button> / <a href="" class="editor_remove">Delete</a>'
-                },
-                {
-                    data:null,render:function (data,type,row) {
-                        return '<a href="/murad/'+data.id+'">'+data.id+'</a>';
-                    }
                 }
             ]
         } );
@@ -62,7 +56,7 @@
         $(document).ready(function()
         {
             $('#addNew').click(function () {
-                alert('okey');
+
             });
 
             $('#saveUser').on('click', function(e) {
@@ -75,7 +69,7 @@
                     success: function(response) {
                         alert(response['response']);
                     },
-                    error: function() {
+                    error: function(response) {
 
                         var response2 = JSON.parse(response.responseText);
                         var errorString = '<ul>';

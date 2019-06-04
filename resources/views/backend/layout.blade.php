@@ -729,7 +729,7 @@
 
 </div>
 <!-- ./wrapper -->
-
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <!-- jQuery 3 -->
 <script src="https://adminlte.io/themes/AdminLTE/bower_components/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->

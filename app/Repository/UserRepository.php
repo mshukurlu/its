@@ -9,7 +9,7 @@ use App\User;
  * Time: 6:47 PM
  */
 
-class UserRepository
+class UserRepository implements UserInterface
 {
     protected  $userModel;
 
@@ -41,5 +41,44 @@ class UserRepository
     public function create($data)
     {
         return $this->userModel->create($data);
+    }
+
+    public function getForApi($request)
+    {
+        $start = intval($request->input('start'));
+        $length = intval($request->input('length'));
+        $draw = intval($request->input('draw'));
+
+        if(!empty($request->input('search.value')))
+        {
+            $data = User::where('name','LIKE','%'.$request->input('search.value').'%')->skip($start)->take($length)->get();
+            $recordsTotal = User::where('name','LIKE','%'.$request->input('search.value').'%')->count();
+            //   $recordsFiltered = $recordsTotal - $data->count();
+
+            // $data = $users->skip($start)->take($length)->get();
+            //  $recordsTotal = $users->count();
+
+        }
+        else
+        {
+            $data = User::skip($start)->take($length)->get();
+            //  $data = $users->skip($start)->take($length)->get();
+            $recordsTotal = User::count();
+            //$recordsFiltered = User::count());
+        }
+        // $recordsFiltered = User::count()-$data->count();
+
+        return array(
+            "data"=>$data,
+            "draw"=>$draw,
+            "length"=>$length,
+            "recordsTotal"=>$recordsTotal,
+            "recordsFiltered"=>$recordsTotal
+        );
+    }
+
+    public function updateUser($user_id, $data)
+    {
+        // TODO: Implement updateUser() method.
     }
 }
