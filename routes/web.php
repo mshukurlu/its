@@ -20,7 +20,8 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['namespace'=>'Backend','prefix'=>'api','middleware'=>'auth'],function(){
-    Route::get('users',['as'=>'users','uses'=>'UserController@getAll']);
-    Route::post('users',['as'=>'users','uses'=>'UserController@create']);
+    Route::get('users',['as'=>'users','uses'=>'UserController@getAll','name'=>'user.all']);
+    Route::post('users',['as'=>'users','uses'=>'UserController@create','name'=>'user.create']);
     Route::put('users',['as'=>'users','uses'=>'UserController@update']);
+    Route::delete('users/{id}',['as'=>'users','uses'=>'UserController@delete','name'=>'user.delete']);
 });

@@ -11,6 +11,6 @@ interface UserInterface
 {
     public function getById($user_id);
     public function getAll();
-    public function updateUser($user_id,$data);
+    public function update($user_id,$data);
     public function deleteUser($user_id);
 }

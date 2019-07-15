@@ -17,7 +17,7 @@
                     {{csrf_field()}}
                     <div class="form-group" style="display: none">
                         <label for="exampleInputEmail1">Id</label>
-                        <input type="text" name="id" class="form-control" id='inputId' placeholder="Enter name">
+                        <input type="number" name="id" class="form-control" id='inputId' placeholder="Enter name">
 
                         <span id="errorName"></span>
                     </div>
@@ -54,7 +54,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" id="updateUser" class="btn btn-primary">Save changes</button>
+                <button type="button" id="saveUser" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
